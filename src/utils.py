@@ -306,15 +306,20 @@ def get_user_agent(driver=None) -> str:
     try:
         if driver is None:
             driver = get_webdriver()
-        USER_AGENT = driver.execute_script("return navigator.userAgent")
-        # Fix for Chrome 117 | https://github.com/FlareSolverr/FlareSolverr/issues/910
-        USER_AGENT = re.sub('HEADLESS', '', USER_AGENT, flags=re.IGNORECASE)
-        return USER_AGENT
     except Exception as e:
-        raise Exception("Error getting browser User-Agent. " + str(e))
+        raise Exception("Error getting webdriver. " + str(e))
+    else:
+        try:
+            USER_AGENT = driver.execute_script("return navigator.userAgent")
+            # Fix for Chrome 117 | https://github.com/FlareSolverr/FlareSolverr/issues/910
+        except Exception as e:
+            raise Exception("Error getting browser User-Agent. " + str(e))
     finally:
         if driver is not None:
             driver.quit()
+
+    USER_AGENT = re.sub('HEADLESS', '', USER_AGENT, flags=re.IGNORECASE)
+    return USER_AGENT
 
 
 def start_xvfb_display():
